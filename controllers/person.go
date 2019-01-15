@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"log"
 	"net/http"
 
 	"../structs"
@@ -102,19 +103,23 @@ func (idb *InDB) DeletePerson(c *gin.Context) {
 		person structs.Person
 		result gin.H
 	)
+
 	id := c.Param("id")
-	err := idb.DB.First(&person, id).Error
+
+	err := idb.DB.Where("id = ?", id).First(&person).Error
 	if err != nil {
 		result = gin.H{
 			"result": "data not found",
 		}
 	}
-	err = idb.DB.Delete(&person).Error
+
+	log.Println(person.First_Name)
+
+	err = idb.DB.Unscoped().Delete(&person).Error
 	if err != nil {
 		result = gin.H{
 			"result": "delete failed",
 		}
-
 	} else {
 		result = gin.H{
 			"result": "Data deleted successfully",
